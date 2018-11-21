@@ -20,6 +20,6 @@ def _parse_args():
 
 if __name__ == '__main__':
     args = _parse_args()
-    # get_weekly_data(from_date=args.from_date)
+    get_weekly_data(from_date=args.from_date)
     calc_probs_process(args.data_path)
     calc_quality_process(args.model_path)
