@@ -13,7 +13,7 @@ from calendar import timegm
 from src.utils.path import Path
 
 
-def date2utc(date, ts_format='%Y-%m-%d %H:%M:%S'):
+def date2utc(date, ts_format='%Y-%m-%d'):
     return timegm(time.strptime(date, ts_format))
 
 
@@ -30,7 +30,7 @@ DAY_IN_SECS = 60 * 60 * 24
 TIME_BETWEEN_SESSION = 3600
 
 
-def connect_mongo(addr='mongodb://192.168.1.131/'):
+def connect_mongo(addr='mongodb://reader:reader@192.168.1.131:27017/'):
     try:
         client = pymongo.MongoClient(addr)
         return client
@@ -56,8 +56,9 @@ def get_weekly_data(from_date=None,
     today_utc = epoch_time - today_curr_secs
     day_start = today_utc - period * DAY_IN_SECS
 
-    now = str(datetime.date(datetime.now()))
-    storage_path = os.path.join(Path.DATA_DIR, now)
+    folder_name = str(datetime.date(datetime.now())) \
+        if not from_date else from_date
+    storage_path = os.path.join(Path.DATA_DIR, folder_name)
     if os.path.exists(storage_path):
         shutil.rmtree(storage_path)
     os.makedirs(storage_path)
@@ -65,6 +66,7 @@ def get_weekly_data(from_date=None,
 
     store_events = collections.defaultdict(list)
     device_last_events = collections.defaultdict(list)
+    stone_mapping = collections.defaultdict()
 
     print('- Get the lastest 7 days data from MongoDB.')
     with open(os.path.join(
@@ -90,11 +92,12 @@ def get_weekly_data(from_date=None,
                         '[Quality missing] Option: {} - URL: {}\n'.format(
                             option, instance['current_url']))
                     continue
-                elif 'value_label' not in option:
+                if 'value_label' not in option:
                     f.write(
                         '[Stone missing] Option: {} - URL: {}\n'.format(
                             option, instance['current_url']))
                     continue
+
                 device_id = instance['device_id']
                 if device_id not in device_last_events:
                     device_last_events[device_id] = instance
@@ -108,6 +111,13 @@ def get_weekly_data(from_date=None,
                         continue
 
                 option = device_last_events[device_id]['option'][0]
+                if 'option_label' not in option:
+                    stone_type = 'null'
+                elif option['option_label'] == 'stone/diamonds':
+                    stone_type = 'stone1'
+                else:
+                    stone_type = 'stone2'
+                stone_mapping[option['value_label']] = stone_type
                 total_valid_instances += 1
                 store_events[instance['store_id']].append(
                     [device_last_events[device_id]['product_id'],
@@ -117,6 +127,14 @@ def get_weekly_data(from_date=None,
 
     for device_id, instance in device_last_events.items():
         option = instance['option'][0]
+        if 'option_label' not in option:
+            stone_type = 'null'
+        elif option['option_label'] == 'stone/diamonds':
+            stone_type = 'stone1'
+        else:
+            stone_type = 'stone2'
+        stone_mapping[option['value_label']] = stone_type
+
         total_valid_instances += 1
         store_events[instance['store_id']].append(
             [device_last_events[device_id]['product_id'],
@@ -131,6 +149,10 @@ def get_weekly_data(from_date=None,
         with open(product_data, 'w') as wf:
             for event in events:
                 wf.write('{},{},{}\n'.format(*event))
+
+    with open(os.path.join(storage_path, 'stone_mapping.csv'), 'w') as f:
+        for k, v in stone_mapping.items():
+            f.write('{},{}\n'.format(k, v))
 
     print('Total instances: ', total_instances)
     print('Num valid instances: ', total_valid_instances)

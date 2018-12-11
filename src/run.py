@@ -9,11 +9,14 @@ from src.model.predict import calc_quality_process
 def _parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--model_path', default=None)
+        '--model_path', default=None,
+        help="Set value to None if run a full cycle process")
     parser.add_argument(
-        '--data_path', default=None)
+        '--data_path', default=None,
+        help="Set value to None if run a full cycle process")
     parser.add_argument(
-        '--from_date', default=None)
+        '--from_date', default=None,
+        help='Set value to None to select today date')
 
     return parser.parse_args()
 

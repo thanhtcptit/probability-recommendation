@@ -34,10 +34,12 @@ def calc_stone_and_quality_prob_given_product(
             for prod, stone_quality_list in products.items():
                 stones_count = collections.defaultdict(lambda: 0)
                 qualities_count = collections.defaultdict(lambda: 0)
+
                 for s, q in stone_quality_list:
                     stones_count[s] += 1
                     qualities_count[q] += 1
                 total_count = sum(stones_count.values())
+
                 for stone, stone_count in stones_count.items():
                     sf.write('{},{},{}\n'.format(
                         prod, stone, stone_count / total_count))
@@ -75,6 +77,7 @@ def calc_probs(store_probs_dir, store_data_path):
     stone_prob_path = os.path.join(store_probs_dir, 'stone_prob.csv')
     quality_prob_path = os.path.join(store_probs_dir, 'quality_prob.csv')
     item_prob_path = os.path.join(store_probs_dir, 'item_prob.csv')
+
     calc_product_prob(product_prob_path, products_count, total_product)
     calc_stone_and_quality_prob_given_product(
         stone_prob_path, quality_prob_path, products)
@@ -88,7 +91,7 @@ def calc_probs_process(data_path):
         data_path = Path.choose_newest_folder(Path.DATA_DIR)
     print('Data folder: ', data_path)
 
-    data_folder, folder_date = os.path.split(data_path)
+    folder_date = os.path.split(data_path)[1]
     probs_dir = os.path.join(Path.MODEL_DIR, folder_date)
     if os.path.exists(probs_dir):
         shutil.rmtree(probs_dir)

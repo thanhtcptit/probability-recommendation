@@ -60,11 +60,11 @@ def load_probs_data(model_path):
 
 def calc_quality_prob(store_model_path, result_file,
                       products_prob, products_stone_prob,
-                      products_quality_prob, item_prob):
+                      products_quality_prob, item_prob, stone_mapping):
     store_id = os.path.split(store_model_path)[1]
     predict_quality_count = collections.defaultdict(lambda: 0)
     with open(result_file, 'a') as f:
-        f.write('product_id,store_id,stone,quality\n')
+        f.write('product_id,store_id,stone,stone_type,quality\n')
         for prod in products_prob.keys():
             for stone in item_prob.keys():
                 if stone not in products_stone_prob[prod]:
@@ -83,8 +83,9 @@ def calc_quality_prob(store_model_path, result_file,
                         products_prob[prod]
                 max_quality, _ = max(
                     qualities_prob.items(), key=lambda x: x[1])
-                f.write('{},{},{},{}\n'.format(
-                    prod, store_id, stone, max_quality))
+                f.write('{},{},{},{},{}\n'.format(
+                    prod, store_id, stone,
+                    stone_mapping[stone], max_quality))
                 predict_quality_count[max_quality] += 1
 
 
@@ -95,9 +96,16 @@ def calc_quality_process(model_path):
     print('Model folder: ', model_path)
 
     date = os.path.split(model_path)[1]
+    data_path = os.path.join(Path.DATA_DIR, date)
     result_file = os.path.join(model_path, '{}.csv'.format(date))
     if os.path.exists(result_file):
         os.remove(result_file)
+
+    stone_mapping = collections.defaultdict()
+    with open(os.path.join(data_path, 'stone_mapping.csv')) as f:
+        for line in f:
+            stone, stone_type = line.strip().split(',')
+            stone_mapping[stone] = stone_type
 
     print('- Calculate quality prob prediction for each store.')
     for store in tqdm(os.listdir(model_path), desc='Store '):
@@ -112,7 +120,7 @@ def calc_quality_process(model_path):
         calc_quality_prob(
             store_model_path, result_file,
             products_prob, products_stone_prob,
-            products_quality_prob, item_prob)
+            products_quality_prob, item_prob, stone_mapping)
 
 
 if __name__ == '__main__':
