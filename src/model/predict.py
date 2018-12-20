@@ -1,4 +1,3 @@
-import pathmagic
 import os
 import sys
 import argparse
@@ -6,6 +5,8 @@ import collections
 import numpy as np
 
 from tqdm import tqdm
+
+sys.path.append('../..')
 
 from src.utils.path import Path
 
@@ -89,17 +90,19 @@ def calc_quality_prob(store_model_path, result_file,
                 predict_quality_count[max_quality] += 1
 
 
-def calc_quality_process(model_path):
-    if model_path is None:
-        print('[*] Flag --model_path is None - Choose the newest folder')
+def calc_quality_process(from_date, output_path=Path.RESULT_FILE):
+    if from_date is None:
+        print('[*] Flag --from_date is None - Choose the newest folder')
         model_path = Path.choose_newest_folder(Path.MODEL_DIR)
+    else:
+        model_path = os.path.join(Path.MODEL_DIR, from_date)
     print('Model folder: ', model_path)
 
     date = os.path.split(model_path)[1]
     data_path = os.path.join(Path.DATA_DIR, date)
-    result_file = os.path.join(model_path, '{}.csv'.format(date))
-    if os.path.exists(result_file):
-        os.remove(result_file)
+
+    if os.path.exists(output_path):
+        os.remove(output_path)
 
     stone_mapping = collections.defaultdict()
     with open(os.path.join(data_path, 'stone_mapping.csv')) as f:
@@ -118,11 +121,13 @@ def calc_quality_process(model_path):
             products_quality_prob, item_prob = load_probs_data(
                 store_model_path)
         calc_quality_prob(
-            store_model_path, result_file,
+            store_model_path, output_path,
             products_prob, products_stone_prob,
             products_quality_prob, item_prob, stone_mapping)
+
+    print('- DONE. Result file stored in {}'.format(output_path))
 
 
 if __name__ == '__main__':
     args = _parse_args()
-    calc_quality_process(args.model_path)
+    calc_quality_process(args.from_date)

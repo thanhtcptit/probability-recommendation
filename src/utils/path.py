@@ -8,6 +8,8 @@ class Path:
     DATA_DIR = os.path.join(PROJECT_ROOT, 'data')
     MODEL_DIR = os.path.join(PROJECT_ROOT, 'model')
     SRC_DIR = os.path.join(PROJECT_ROOT, 'src')
+    CONFIG_FILE = os.path.join(SRC_DIR, 'config.json')
+    RESULT_FILE = os.path.join(DATA_DIR, 'stone-quality-rec.csv')
 
     def choose_newest_folder(path):
         newest_folder = None

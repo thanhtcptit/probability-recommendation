@@ -9,7 +9,7 @@ Project Organization
     ├── model              <- Store probabilities data use for recommendation
     ├── src                <- Source code in this project.
     │    ├── __init__.py        <- Makes src a Python module.
-    │    ├── pathmagic.py       <- Dynamic link between script modules.
+    │    ├── config.json        <- Store configs.
     │    ├── run.py             <- Run a full cycle processing.
     │    ├── data
     │    │     └── get_data_from_db.py    <- Get transaction data from 7-nearest day start from a specific day.
@@ -26,6 +26,4 @@ Run
 
 1. Activate virtual envs: source /home/ntq/virtualenv/tf17py3/bin/activate
 2. Run 'python {PROJECT_ROOT}/src/run.py --from_date=desire_date (%Y-%m-%d)' or set value to None to select today date.
-3. Result file are store in {PROJECT_ROOT}/model/{run-date folder}/{run-date file}.csv.
-
 ------------

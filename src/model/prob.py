@@ -1,4 +1,3 @@
-import pathmagic
 import os
 import argparse
 import shutil
@@ -7,6 +6,8 @@ import sys
 
 from datetime import datetime
 from tqdm import tqdm
+
+sys.path.append('../..')
 
 from src.utils.path import Path
 
@@ -85,10 +86,12 @@ def calc_probs(store_probs_dir, store_data_path):
         item_prob_path, stone_quality_count, total_product)
 
 
-def calc_probs_process(data_path):
-    if data_path is None:
-        print('[*] Flag --data_path is None - Choose the newest folder')
+def calc_probs_process(from_date=None):
+    if from_date is None:
+        print('[*] Flag --from_date is None - Choose the newest folder')
         data_path = Path.choose_newest_folder(Path.DATA_DIR)
+    else:
+        data_path = os.path.join(Path.DATA_DIR, from_date)
     print('Data folder: ', data_path)
 
     folder_date = os.path.split(data_path)[1]
@@ -110,4 +113,4 @@ def calc_probs_process(data_path):
 
 if __name__ == '__main__':
     args = _parse_args()
-    calc_probs_process(args.data_path)
+    calc_probs_process(args.from_date)

@@ -1,4 +1,3 @@
-import pathmagic
 import sys
 import pymongo
 import time
@@ -9,6 +8,8 @@ import shutil
 from datetime import datetime
 from tqdm import tqdm
 from calendar import timegm
+
+sys.path.append('../..')
 
 from src.utils.path import Path
 
@@ -30,7 +31,7 @@ DAY_IN_SECS = 60 * 60 * 24
 TIME_BETWEEN_SESSION = 3600
 
 
-def connect_mongo(addr='mongodb://reader:reader@192.168.1.131:27017/'):
+def connect_mongo(addr):
     try:
         client = pymongo.MongoClient(addr)
         return client
@@ -39,10 +40,11 @@ def connect_mongo(addr='mongodb://reader:reader@192.168.1.131:27017/'):
 
 
 def get_weekly_data(from_date=None,
+                    mongo_addr='mongodb://reader:reader@192.168.1.131:27017/',
                     db_name='countly',
                     collection='select_product_option_quality',
                     period=7):
-    client = connect_mongo()
+    client = connect_mongo(mongo_addr)
     db = client[db_name]
     coll = db[collection]
 
@@ -156,7 +158,3 @@ def get_weekly_data(from_date=None,
 
     print('Total instances: ', total_instances)
     print('Num valid instances: ', total_valid_instances)
-
-
-if __name__ == '__main__':
-    get_weekly_data(from_date='2018-10-30 4:0:55')
