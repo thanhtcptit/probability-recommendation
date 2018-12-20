@@ -20,8 +20,12 @@ Project Organization
     │    │     └── path.py                <- Store all path used in this project.
 
 ------------
+
 Run
+------------
 
 1. Activate virtual envs: source /home/ntq/virtualenv/tf17py3/bin/activate
 2. Run 'python {PROJECT_ROOT}/src/run.py --from_date=desire_date (%Y-%m-%d)' or set value to None to select today date.
 3. Result file are store in {PROJECT_ROOT}/model/{run-date folder}/{run-date file}.csv.
+
+------------
