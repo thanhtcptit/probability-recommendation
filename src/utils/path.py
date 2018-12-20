@@ -14,6 +14,8 @@ class Path:
     def choose_newest_folder(path):
         newest_folder = None
         for folder in os.listdir(path):
+            if not os.path.isdir(os.path.join(path, folder)):
+                continue
             folder_date = datetime.date(datetime.strptime(folder, '%Y-%m-%d'))
             if not newest_folder:
                 newest_folder = folder_date
