@@ -1,4 +1,4 @@
-Stone-quality recommendation for Glamira
+Recommendation by Probability
 ==============================
 
 Project Organization
@@ -15,7 +15,7 @@ Project Organization
     │    │     └── get_data_from_db.py    <- Get transaction data from 7-nearest day start from a specific day.
     │    ├── model
     │    │     ├── prob.py                <- Calculate relevance probs data.
-    │    │     └── predict.py             <- Calculate quality recommendation given product and stone.
+    │    │     └── predict.py             <- Calculate recommendation given product and stone.
     │    ├── util
     │    │     └── path.py                <- Store all path used in this project.
 
@@ -24,6 +24,6 @@ Project Organization
 Run
 ------------
 
-1. Activate virtual envs: source /home/ntq/virtualenv/tf17py3/bin/activate
+1. Activate virtual envs
 2. Run 'python {PROJECT_ROOT}/src/run.py --from_date=desire_date (%Y-%m-%d)' or set value to None to select today date.
 ------------
